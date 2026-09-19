@@ -3,19 +3,27 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'core/theme/arv_theme.dart';
-import 'screens/home_screen.dart';
+import 'screens/login_screen.dart';
+import 'services/firebase_bootstrap_service.dart';
+import 'services/local_database_service.dart';
 import 'services/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await initializeDateFormatting('es_PE');
+  await LocalDatabaseService.instance.init();
   await NotificationService.instance.init();
 
-  runApp(const ArvApp());
+  final firebaseReady = await FirebaseBootstrapService.instance.initialize();
+
+  runApp(ArvApp(firebaseReady: firebaseReady));
 }
 
 class ArvApp extends StatelessWidget {
-  const ArvApp({super.key});
+  final bool firebaseReady;
+
+  const ArvApp({super.key, required this.firebaseReady});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +41,7 @@ class ArvApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const HomeScreen(),
+      home: LoginScreen(firebaseReady: firebaseReady),
     );
   }
 }
