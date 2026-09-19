@@ -1,65 +1,62 @@
-# ARV — arquitectura propuesta
+# ARV — Arquitectura móvil
 
-## Objetivo
-ARV no es solo un calendario. Es un asistente jurídico móvil que conecta agenda, casos, clientes, recordatorios, Meet, Gmail, evidencias y acciones posteriores.
+## Principio
 
-## Capas
+ARV debe seguir funcionando aunque no haya Internet o Firebase no responda.
 
-### App móvil
-Flutter para Android y iOS con una sola base de código.
+## Dispositivo
 
-### Datos
-Supabase:
-- Auth
-- PostgreSQL
-- Row Level Security
-- Storage privado
-- Realtime
+Flutter:
+- SQLite: fuente local de experiencia.
+- Notificaciones locales: avisos programados.
+- Voz: creación rápida de acciones.
+- Biometría: desbloqueo.
+- Cámara/archivos: evidencias.
 
-### Notificaciones
-1. Notificación local para recordatorios simples y funcionamiento offline.
-2. Push remoto mediante FCM/APNs para avisos generados desde servidor.
-3. Resumen nocturno configurable.
-4. Resumen matutino configurable.
-5. Avisos escalonados antes de audiencias y reuniones.
+## Nube
 
-### Google
-OAuth independiente y revocable:
-- Google Calendar: leer/crear/actualizar eventos.
-- Gmail: detectar correos seleccionados como relevantes.
-- Meet: usar el enlace incluido en el evento de Calendar.
-- Drive: adjuntar documentos si el usuario lo autoriza.
+Firebase:
+- Authentication: identidad.
+- Firestore: sincronización estructurada.
+- Cloud Messaging: avisos remotos.
+- Storage: opcional y limitado a archivos pequeños.
 
-Nunca se guardará la contraseña de Google.
+## Google
 
-### IA / interpretación
-La app recibe texto o voz y lo transforma en una propuesta estructurada antes de guardar.
+- Calendar: citas, reuniones y Meet.
+- Gmail: detección de correos relevantes autorizados.
+- Drive: opción preferida para documentos y archivos grandes.
 
-Ejemplo:
-“Recuérdame mañana a las nueve llamar al Dr. Pérez por el caso Rodríguez y el viernes revisar si presentó el escrito.”
+## Estructura Firestore
 
-Resultado:
-- Acción 1: llamada, mañana 09:00.
-- Acción 2: seguimiento, viernes.
-- Caso sugerido: Rodríguez.
-- Relación entre ambas acciones.
+/users/{uid}
+/users/{uid}/agenda/{id}
+/users/{uid}/cases/{id}
+/users/{uid}/clients/{id}
+/users/{uid}/evidence/{id}
+/users/{uid}/settings/{id}
 
-El usuario confirma antes de persistir.
+Nunca se mezclan documentos de dos usuarios.
 
-## Offline
-La app debe permitir ver agenda reciente, crear notas, tareas y evidencias sin internet. Cuando vuelve la conexión, sincroniza.
+## Sincronización
 
-## Seguridad
-- Face ID / huella.
-- PIN alternativo.
-- Tokens en almacenamiento seguro.
-- RLS en todas las tablas.
-- Archivos privados.
-- Ocultar contenido sensible de notificaciones si el usuario lo activa.
+Cada registro local mantiene:
+- id estable;
+- updated_at;
+- synced;
+- origen.
 
-## Fases
-1. Base visual + agenda + recordatorios + voz.
-2. Clientes + casos + evidencias + timeline.
-3. Supabase + autenticación + sincronización.
-4. Calendar + Gmail + Meet.
-5. Asistente contextual y resúmenes inteligentes.
+Los cambios se guardan primero en SQLite. Luego se empujan a Firestore cuando hay conexión.
+
+## Recordatorios
+
+Los avisos críticos conocidos deben programarse en el dispositivo para no depender de la nube.
+
+Ejemplo audiencia 10:00:
+- 21:30 del día anterior.
+- 07:00 del mismo día.
+- 09:30.
+- 09:50.
+- 09:55 con acceso a Meet.
+
+FCM queda para eventos nacidos en servidor o cambios externos.
