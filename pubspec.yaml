@@ -1,7 +1,7 @@
 name: agenda_moderna
 description: ARV - Asistente jurídico personal para Android y iOS.
 publish_to: "none"
-version: 0.1.0+1
+version: 0.2.0+2
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
@@ -15,21 +15,29 @@ dependencies:
   flutter_riverpod: ^2.6.1
   go_router: ^14.6.2
   intl: ^0.19.0
-  supabase_flutter: ^2.8.1
-  flutter_dotenv: ^5.2.1
+  firebase_core: ^3.8.1
+  firebase_auth: ^5.3.4
+  cloud_firestore: ^5.5.1
+  firebase_messaging: ^15.1.6
+  firebase_storage: ^12.3.7
+  google_sign_in: ^6.2.2
+  http: ^1.2.2
+  sqflite: ^2.4.1
+  path: ^1.9.0
+  path_provider: ^2.1.5
+  connectivity_plus: ^6.1.1
+  shared_preferences: ^2.3.3
+  local_auth: ^2.3.0
+  flutter_secure_storage: ^9.2.2
+  permission_handler: ^11.3.1
   flutter_local_notifications: ^18.0.1
   timezone: ^0.10.0
   speech_to_text: ^7.0.0
   flutter_tts: ^4.2.0
-  permission_handler: ^11.3.1
-  local_auth: ^2.3.0
-  flutter_secure_storage: ^9.2.2
   image_picker: ^1.1.2
   file_picker: ^8.1.4
   url_launcher: ^6.3.1
   table_calendar: ^3.1.2
-  google_sign_in: ^6.2.2
-  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:
@@ -40,4 +48,3 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - .env
