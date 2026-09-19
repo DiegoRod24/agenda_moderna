@@ -2,77 +2,73 @@
 
 Aplicación móvil para Android y iPhone pensada como asistente jurídico personal.
 
-**Perfil piloto:** Diego Alfredo Rodríguez Villalobos  
+**Perfil piloto:** Diego Alfredo Rodríguez Villalobos
 **Identidad visual:** azul marino + dorado, basada en el sello ARV.
 
-## Qué ya contiene esta primera base
+## Arquitectura actual
+
+ARV usa una estrategia **local-first**:
+
+- SQLite en el teléfono como base de trabajo inmediata.
+- Firebase para autenticación, sincronización y push.
+- Google Calendar / Gmail / Meet por OAuth.
+- Si Firebase todavía no está configurado, la app puede abrir en **modo local**.
+
+## Qué ya contiene
 
 - Pantalla móvil “Hoy”.
+- Login ARV preparado para Google/Firebase.
+- Modo local sin nube.
+- Base SQLite inicial.
 - Resumen del día.
-- Tarjetas de urgencia, pendientes y correos.
 - Agenda demo.
-- Botón rápido para dictar, cita, tarea, caso, evidencia y nota.
-- Captura por voz en español.
-- Botón para abrir Google Meet.
+- Captura por voz.
+- Acceso a Meet.
 - Notificación local de prueba.
-- Tema visual ARV.
-- Esquema inicial Supabase con RLS.
-- Arquitectura preparada para Gmail, Calendar, Meet y evidencias.
+- Tema azul marino + dorado.
 
-## Ejecutar
+## Primer arranque
 
-Necesitas Flutter instalado.
+1. Clonar el repositorio.
+2. Ejecutar `flutter create . --platforms=android,ios` si las carpetas nativas aún no existen.
+3. Ejecutar `flutter pub get`.
+4. Ejecutar `flutter run`.
 
-```bash
-git clone https://github.com/DiegoRod24/agenda_moderna.git
-cd agenda_moderna
+## Configurar Firebase
 
-# Como el repositorio empezó vacío, genera una vez los contenedores nativos:
-flutter create . --platforms=android,ios
+En tu PC instala FlutterFire CLI:
 
-flutter pub get
+`dart pub global activate flutterfire_cli`
 
-# Crear archivo .env desde el ejemplo
-cp .env.example .env
+Después, dentro de la carpeta del proyecto:
 
-flutter run
-```
+`flutterfire configure`
 
-En Windows PowerShell:
+Selecciona tu proyecto Firebase y marca Android e iOS.
 
-```powershell
-Copy-Item .env.example .env
-```
+## Firebase Console
 
-## Backend propuesto
+Activa:
 
-Supabase.
+1. Authentication → Google.
+2. Firestore Database.
+3. Cloud Messaging.
+4. Storage solo si decidimos usarlo para archivos pequeños.
 
-1. Crear proyecto.
-2. Abrir SQL Editor.
-3. Ejecutar `supabase/schema.sql`.
-4. Copiar URL y ANON KEY a `.env`.
-5. Crear bucket privado `case-files`.
+## Flujo
 
-## Flujo de notificación objetivo
+Usuario → ARV Flutter → SQLite local → cola de sincronización → Firebase.
 
-Ejemplo para una audiencia a las 10:00:
-
-- Día anterior 21:30 → “Mañana tiene audiencia. Aún falta revisar el escrito.”
-- Mismo día 07:30 → “Buenos días, Doctor. Hoy tiene audiencia a las 10:00.”
-- 09:30 → “Audiencia en 30 minutos.”
-- 09:50 → “¿Está listo? Revise el caso.”
-- 09:55 → botón “Abrir Meet”.
-- Al terminar → “¿Desea registrar una acción posterior?”
+Sin Internet se podrá seguir usando agenda, notas, tareas y recordatorios locales. Cuando vuelve Internet, ARV sincroniza.
 
 ## Próximo bloque
 
-- Navegación real entre Hoy / Agenda / Casos / ARV.
-- CRUD de eventos.
-- CRUD de clientes y casos.
-- Evidencias con foto/video/documentos.
-- Recordatorios programados.
-- Resumen nocturno y matutino.
-- Login biométrico.
-- Conexión Supabase.
-- Google OAuth.
+- CRUD local real de citas.
+- Navegación Hoy / Agenda / Casos / ARV.
+- Sincronización Firestore.
+- Recordatorios múltiples.
+- Resumen matutino/nocturno.
+- Biometría.
+- Google Calendar / Gmail / Meet.
+- Evidencias foto/video/documentos.
+- Timeline de casos.
